@@ -136,7 +136,7 @@ section.scene .place{color:var(--muted);font-size:13px;margin-bottom:8px}
 
   <section class="bank" id="bank">
     <h2>음원 파일</h2>
-    <p>음향팀 드라이브 「26-2 정기공연 음향 음원」 폴더의 1차 편집본 24개. 파일을 새로 올리면 그 소리를 쓰는 큐가 전부 바뀜. 올린 파일은 이 브라우저에만 저장됨.</p>
+    <p>음향팀 드라이브 「26-2 정기공연 음향 음원」 폴더의 1차 편집본 24개와 초인종 1개(Mixkit). 파일을 새로 올리면 그 소리를 쓰는 큐가 전부 바뀜. 올린 파일은 이 브라우저에만 저장됨.</p>
     <div class="files" id="files"></div>
   </section>
 </div>
@@ -147,14 +147,14 @@ section.scene .place{color:var(--muted);font-size:13px;margin-bottom:8px}
 "use strict";
 
 var FILES = {
-  s00:"0_1 관객입장곡 (I left my heart in San Francisco)", s01:"1 탁상 전화벨", s03:"3 도어벨", s04:"4 김산 휴대폰 전화벨",
-  s05:"5 뉴욕 거리 음향 (+재즈)", s06:"6 갤러리 웅성거림", s08:"8 공항 (미국)", s09:"9 노크 소리 (인성)", s10:"10 노크+종소리 (인성)",
+  s00:"0_1 관객입장곡 (I left my heart in San Francisco)", s01:"1 탁상 전화벨", s02bell:"초인종 (딩동)", s03:"3 도어벨 (안 씀)", s04:"4 김산 휴대폰 전화벨",
+  s05:"5 뉴욕 거리 음향 (+재즈)", s06:"6 갤러리 웅성거림", s08:"8 공항 (미국)", s09:"9 노크 소리 (인성)", s10:"10 노크+종소리 (인성, 안 씀)",
   s12L:"12 핸드폰 벨소리 (L)", s12:"12 핸드폰 전화벨", s13:"13 공항 (한국)", s14:"14 메시지 수신음", s15:"15 메시지 발송음",
   s15k:"15 노크 소리 (정우)", s16:"16 종이 찢는 소리", s17:"17 부재중 음성", s18:"18 기자 셔터 소리", s19:"19 탁상 전화벨",
-  s20a:"20 고객의 목소리 1", s20b:"20 고객의 목소리 2 (네)", s21:"21 노크+종소리 (정우)", s22:"22 축하 소리", s23:"23 커튼콜"
+  s20a:"20 고객의 목소리 1", s20b:"20 고객의 목소리 2 (네)", s21:"21 노크+종소리 (정우, 안 씀)", s22:"22 축하 소리", s23:"23 커튼콜"
 };
 var LOOPS = ["s00","s01","s04","s05","s06","s12L","s12","s18","s19"];
-var BUNDLED = {"s00": "snd/s00.mp4", "s01": "snd/s01.mp4", "s03": "snd/s03.mp4", "s04": "snd/s04.mp4", "s05": "snd/s05.mp4", "s06": "snd/s06.mp4", "s08": "snd/s08.mp4", "s09": "snd/s09.mp4", "s10": "snd/s10.mp4", "s12": "snd/s12.mp4", "s12L": "snd/s12L.mp3", "s13": "snd/s13.mp4", "s14": "snd/s14.mp4", "s15": "snd/s15.mp4", "s15k": "snd/s15k.mp4", "s16": "snd/s16.mp4", "s17": "snd/s17.mp4", "s18": "snd/s18.mp4", "s19": "snd/s19.mp4", "s20a": "snd/s20a.mp3", "s20b": "snd/s20b.mp4", "s21": "snd/s21.mp4", "s22": "snd/s22.mp4", "s23": "snd/s23.mp3"};
+var BUNDLED = {"s00": "snd/s00.mp4", "s01": "snd/s01.mp4", "s02bell": "snd/s02bell.mp3", "s03": "snd/s03.mp4", "s04": "snd/s04.mp4", "s05": "snd/s05.mp4", "s06": "snd/s06.mp4", "s08": "snd/s08.mp4", "s09": "snd/s09.mp4", "s10": "snd/s10.mp4", "s12": "snd/s12.mp4", "s12L": "snd/s12L.mp3", "s13": "snd/s13.mp4", "s14": "snd/s14.mp4", "s15": "snd/s15.mp4", "s15k": "snd/s15k.mp4", "s16": "snd/s16.mp4", "s17": "snd/s17.mp4", "s18": "snd/s18.mp4", "s19": "snd/s19.mp4", "s20a": "snd/s20a.mp3", "s20b": "snd/s20b.mp4", "s21": "snd/s21.mp4", "s22": "snd/s22.mp4", "s23": "snd/s23.mp3"};
 
 var SCENES = [
   ["pre","공연 전","관객 입장"],
@@ -176,13 +176,11 @@ var CUES = [
   {id:"1", s:"pro", ln:"0033", when:"팻말 OPEN 돌리고 조명 들어올 때", f:"s01"},
   {id:"1-x", s:"pro", ln:"0034", kind:"stop", targets:["1"], fade:.05, when:"수정이 전화 받으면", what:"전화벨 컷"},
   {id:"N2", s:"pro", ln:"0035", kind:"note", when:"프롤로그에서 1장 넘어갈 때", what:"2번 막간 음악: 음원 아직 없음"},
-  {id:"3a", s:"s1", ln:"0037", when:"첫 의뢰인 등장", f:"s03"},
-  {id:"3b", s:"s1", ln:"0054", when:"의뢰인 퇴장", f:"s03"},
-  {id:"3c", s:"s1", ln:"0062", when:"김산 벌컥 들어옴", f:"s03"},
+  {id:"B1", s:"s1", ln:"0037", when:"첫 의뢰인 등장", f:"s02bell"},
+  {id:"B2", s:"s1", ln:"0062", when:"김산 벌컥 들어옴", f:"s02bell"},
   {id:"4", s:"s1", ln:"", when:"김산 휴대폰 울릴 때 (최신 대본 위치 확인)", f:"s04"},
   {id:"4-x", s:"s1", ln:"", kind:"stop", targets:["4"], fade:.1, when:"김산이 받거나 끌 때", what:"벨 컷"},
-  {id:"3d", s:"s1", ln:"0076", when:"김산 퇴장", f:"s03"},
-  {id:"3e", s:"s1", ln:"0086", when:"정우 등장", f:"s03"},
+  {id:"15k", s:"s1", ln:"0086", when:"정우 등장", f:"s15k"},
   {id:"5", s:"s1", ln:"0106", when:"예약 버튼 누르고 암전", f:"s05", fadeIn:1},
   {id:"5-x", s:"s2", ln:"0108", kind:"stop", targets:["5"], fade:5, when:"명전 (2장 조명)", what:"도로 소리 5초 페이드아웃"},
   {id:"6", s:"s3", ln:"0192", when:"조명 들어오면서", f:"s06", fadeIn:1},
@@ -190,7 +188,7 @@ var CUES = [
   {id:"N7", s:"s3", ln:"", kind:"note", when:"3장과 5장 사이", what:"7번 음원: 아직 없음"},
   {id:"8a", s:"s5", ln:"0394", when:"두 사람 포옹", f:"s08"},
   {id:"9", s:"s6", ln:"0396", when:"조명 들어오면서, 다급한 노크", f:"s09"},
-  {id:"10", s:"s6", ln:"0398", when:"다시 노크, 문 열림", f:"s10"},
+  {id:"9b", s:"s6", ln:"0398", when:"다시 노크", f:"s09"},
   {id:"N11", s:"s6", ln:"0458", kind:"note", when:"한국에서의 며칠 몽타주", what:"11번 음악: 음원 아직 없음"},
   {id:"12a", s:"s6", ln:"0478", when:"두 사람 웃는 순간, 인성 폰 울림", f:"s12L"},
   {id:"12a-x", s:"s6", ln:"0479", kind:"stop", targets:["12a"], fade:.05, when:"인성이 받으면", what:"벨 컷"},
@@ -209,7 +207,7 @@ var CUES = [
   {id:"19-x", s:"s7", ln:"0569", kind:"stop", targets:["19"], fade:.05, when:"수정이 받으면", what:"전화벨 컷"},
   {id:"20a", s:"s7", ln:"0570", when:"네, 러브레터 대신 써드립니다. 다음", f:"s20a"},
   {id:"20b", s:"s7", ln:"0574", when:"...죄송해요. 다음", f:"s20b"},
-  {id:"21", s:"s7", ln:"0579", when:"정우 등장 (노크, 문 열림)", f:"s21"},
+  {id:"15k2", s:"s7", ln:"0579", when:"정우 등장 (노크)", f:"s15k"},
   {id:"Nt", s:"s7", ln:"0618", kind:"note", when:"첫 문장 칠 때", what:"타자 소리: 음향 리스트에 없음"},
   {id:"22", s:"s8", ln:"0682", when:"인터뷰 끝, 축하 소리", f:"s22"},
   {id:"12b", s:"s8", ln:"0682", when:"인성이 수정에게 전화 (축하 소리 사이)", f:"s12L"},
